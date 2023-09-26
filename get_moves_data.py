@@ -38,8 +38,9 @@ def extract_data(data):
     priority = data['priority']
     power = data['power']
     type = data['type']
+    stat_changes = data['stat_changes']
 
-    return id, name, accuracy, pp, priority, power, type
+    return id, name, accuracy, pp, priority, power, type, stat_changes
 
 
 

@@ -21,7 +21,6 @@ class Pokemon:
     while len(move_names) < num:
       randomMove = random.choice(self.moves)
       if randomMove not in move_names:
-        if Move(randomMove).power is not None:
          move_names.append(randomMove)
 
     for move in move_names:
@@ -35,12 +34,12 @@ class Pokemon:
   def setHealth(self, health):
     self.stats['hp'] = health
 
-  def take_damage(self, damage):
+  def takeDamage(self, damage):
       self.stats['hp'] -= damage
       if self.stats['hp'] < 0:
           self.stats['hp'] = 0
 
-  def is_fainted(self):
+  def isFainted(self):
       return self.stats['hp'] <= 0
   
   def printHealth(self):
@@ -67,8 +66,21 @@ class Pokemon:
      else:
         type_text_slowly(f"{self.name.capitalize()} can't use that move anymore!")
         return False
+     
+  def alterStats(self, move, isOpponentMove):
+   if isOpponentMove:
+      for statChange in move.stat_changes:
+         if statChange['change'] < 0:
+            self.stats[statChange['stat']['name']] += statChange['change']
+            type_text_slowly(f"{self.name.capitalize()}'s {statChange['stat']['name']} was decreased!")
+   else:
+      for statChange in move.stat_changes:
+         if statChange['change'] > 0:
+            self.stats[statChange['stat']['name']] += statChange['change']
+            type_text_slowly(f"{self.name.capitalize()}'s {statChange['stat']['name']} was increased!")
+
 
 if __name__ == '__main__':
   Pikachu = Pokemon('pikachu')
   Pikachu.take_damage(10)
-  print(Pikachu.moves)
+  print(Pikachu.stats)
