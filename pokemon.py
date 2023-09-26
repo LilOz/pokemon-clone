@@ -21,7 +21,8 @@ class Pokemon:
     while len(move_names) < num:
       randomMove = random.choice(self.moves)
       if randomMove not in move_names:
-        move_names.append(randomMove)
+        if Move(randomMove).power is not None:
+         move_names.append(randomMove)
 
     for move in move_names:
        moves.append(Move(move))
@@ -43,9 +44,9 @@ class Pokemon:
       return self.stats['hp'] <= 0
   
   def printHealth(self):
-     healthBar = '=' * int(10 // (self.maxHP /self.stats['hp']))
-     print(healthBar)
+     healthBar = '=' * int(20 // (self.maxHP / self.stats['hp']))
      print(f"{self.name.capitalize()}'s HP: {round(self.stats['hp'],1)}")
+     print(healthBar)
      
   def printMoves(self):
      print(f"Which move should {self.name.capitalize()} use?")
@@ -64,7 +65,7 @@ class Pokemon:
         print('')
         return True
      else:
-        type_text_slowly(f"You can't use that move anymore!")
+        type_text_slowly(f"{self.name.capitalize()} can't use that move anymore!")
         return False
 
 if __name__ == '__main__':

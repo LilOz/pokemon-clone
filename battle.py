@@ -135,7 +135,7 @@ class Battle:
     mod = TYPE_MODS[typeAttacking][typeDefending] * stab
     damage = 0.5 * power * (attack/defense) * mod
 
-    return damage/10
+    return damage/5
 
   def selectPokemon(self):
     valid = False
@@ -160,13 +160,13 @@ class Battle:
     index_trainer1_pokemon = [poke.name.lower() for poke in self.trainer1.pokemon].index(self.trainer1_choice.lower())
     index_trainer2_pokemon = [poke.name.lower() for poke in self.trainer2.pokemon].index(self.trainer2_choice.lower())
 
-    type_text_slowly(f"{self.trainer1.name} with {self.trainer1_choice.capitalize()} vs {self.trainer2.name} with {self.trainer2_choice.capitalize()}!")
+    type_text_slowly(f"{self.trainer1.name} with {self.trainer1_choice.capitalize()} VS {self.trainer2.name} with {self.trainer2_choice.capitalize()}!")
     while (not self.trainer1.pokemon[index_trainer1_pokemon].is_fainted()) and (not self.trainer2.pokemon[index_trainer2_pokemon].is_fainted()):
       print('')
       print('')
       self.trainer1.pokemon[index_trainer1_pokemon].printHealth()
       print('')
-      self.trainer2.pokemon[index_trainer1_pokemon].printHealth()
+      self.trainer2.pokemon[index_trainer2_pokemon].printHealth()
       print('')
       self.trainer1.pokemon[index_trainer1_pokemon].printMoves()
 
@@ -175,23 +175,47 @@ class Battle:
         selection = input()
         if selection in ['1','2','3','4']:
           if self.trainer1.pokemon[index_trainer1_pokemon].useMove(self.trainer1.pokemon[index_trainer1_pokemon].moves[int(selection)-1].name):
+            trainer1Move = self.trainer1.pokemon[index_trainer1_pokemon].moves[int(selection)-1]
+            effectiveness = TYPE_MODS[trainer1Move.type['name'].capitalize()][self.trainer2.pokemon[index_trainer2_pokemon].types[0].capitalize()]
+            if effectiveness == 2:
+              type_text_slowly("It's super effective!")
+            elif effectiveness == 0.5:
+              type_text_slowly("It's not very effective")
             valid = True
         else:
           type_text_slowly("Invalid choice, try again:")
           print('')
           self.trainer1.pokemon[index_trainer1_pokemon].printMoves()
 
-      trainer1Move = self.trainer1.pokemon[index_trainer1_pokemon].moves[int(selection)-1]
+      
 
       valid = False
       while not valid:
         trainer2Move = random.choice(self.trainer2.pokemon[index_trainer2_pokemon].moves)
         if self.trainer2.pokemon[index_trainer2_pokemon].useMove(trainer2Move.name):
+          effectiveness = TYPE_MODS[trainer2Move.type['name'].capitalize()][self.trainer1.pokemon[index_trainer1_pokemon].types[0].capitalize()]
+          if effectiveness == 2:
+            type_text_slowly("It's super effective!")
+          elif effectiveness == 0.5:
+            type_text_slowly("It's not very effective")
           valid = True
-          trainer2Move = random.choice(self.trainer2.pokemon[index_trainer2_pokemon].moves)
 
-      damageToPokemon2 = self.caclulateDamage(self.trainer1.pokemon[index_trainer1_pokemon].stats['attack'], self.trainer2.pokemon[index_trainer2_pokemon].stats['defense'], trainer1Move.power, self.trainer1.pokemon[index_trainer1_pokemon].types[0].capitalize(), self.trainer2.pokemon[index_trainer2_pokemon].types[0].capitalize(), trainer1Move.type['name'])
-      damageToPokemon1 = self.caclulateDamage(self.trainer2.pokemon[index_trainer2_pokemon].stats['attack'], self.trainer1.pokemon[index_trainer1_pokemon].stats['defense'], trainer2Move.power, self.trainer2.pokemon[index_trainer2_pokemon].types[0].capitalize(), self.trainer1.pokemon[index_trainer1_pokemon].types[0].capitalize(), trainer2Move.type['name'])
+      damageToPokemon2 = self.caclulateDamage(
+                                              self.trainer1.pokemon[index_trainer1_pokemon].stats['attack'],
+                                              self.trainer2.pokemon[index_trainer2_pokemon].stats['defense'],
+                                              trainer1Move.power,
+                                              self.trainer1.pokemon[index_trainer1_pokemon].types[0].capitalize(),
+                                              self.trainer2.pokemon[index_trainer2_pokemon].types[0].capitalize(),
+                                              trainer1Move.type['name']
+                                              )
+      damageToPokemon1 = self.caclulateDamage(
+                                              self.trainer2.pokemon[index_trainer2_pokemon].stats['attack'],
+                                              self.trainer1.pokemon[index_trainer1_pokemon].stats['defense'],
+                                              trainer2Move.power,
+                                              self.trainer2.pokemon[index_trainer2_pokemon].types[0].capitalize(),
+                                              self.trainer1.pokemon[index_trainer1_pokemon].types[0].capitalize(),
+                                              trainer2Move.type['name']
+                                              )
 
       self.trainer2.pokemon[index_trainer2_pokemon].take_damage(damageToPokemon2)
       if(self.trainer2.pokemon[index_trainer2_pokemon].is_fainted()):
@@ -214,10 +238,10 @@ class Battle:
 
 if __name__ == '__main__':
   os.system('clear')
-  type_text_slowly(art.text2art('Pokemon'), 0.001)
+  type_text_slowly(art.text2art('Pokemon'), 0.01)
 
-  Ayman = Trainer('Ayman', ['Charmander', 'Pikachu', 'Mewtwo'])
-  Laura = Trainer('Laura', ['Squirtle', 'Charizard', 'Ditto'])
+  Ayman = Trainer('Ayman', ['Squirtle'])
+  Laura = Trainer('Laura', ['Charmander'])
 
   battle = Battle(Ayman, Laura)
   input()
